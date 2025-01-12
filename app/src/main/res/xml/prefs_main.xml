@@ -294,11 +294,11 @@
             app:inflatedXml="@xml/huanji"/>
 
         <com.sevtinge.hyperceiler.prefs.PreferenceHeader
+            android:fragment="com.sevtinge.hyperceiler.ui.fragment.app.MediaeditorFragment"
             android:icon="@drawable/ic_default"
             android:key="prefs_key_mediaeditor"
             android:summary="com.miui.mediaeditor"
-            android:title="@string/mediaeditor"
-            app:inflatedXml="@xml/mediaeditor"/>
+            android:title="@string/mediaeditor" />
 
         <com.sevtinge.hyperceiler.prefs.PreferenceHeader
             android:fragment="com.sevtinge.hyperceiler.ui.fragment.app.MiShareFragment"
@@ -453,6 +453,13 @@
             android:summary="com.xiaomi.scanner"
             android:title="@string/scanner"
             app:inflatedXml="@xml/scanner"/>
+
+        <com.sevtinge.hyperceiler.prefs.PreferenceHeader
+            android:icon="@drawable/ic_default"
+            android:key="prefs_key_simactivate"
+            android:summary="com.xiaomi.simactivate.service"
+            android:title="@string/sim_activation_service"
+            app:inflatedXml="@xml/simactivate"/>
 
         <com.sevtinge.hyperceiler.prefs.PreferenceHeader
             android:icon="@drawable/ic_default"
