@@ -27,7 +27,8 @@ import com.sevtinge.hyperceiler.module.base.*
 import com.sevtinge.hyperceiler.module.hook.systemui.controlcenter.*
 import com.sevtinge.hyperceiler.module.hook.systemui.other.*
 import com.sevtinge.hyperceiler.module.hook.systemui.statusbar.icon.v.*
-import com.sevtinge.hyperceiler.utils.api.PluginFactory
+import com.sevtinge.hyperceiler.utils.api.*
+import com.sevtinge.hyperceiler.utils.log.LogManager.*
 import java.lang.ref.*
 
 object NewPluginHelperKt : BaseHook() {
@@ -70,19 +71,29 @@ object NewPluginHelperKt : BaseHook() {
 
                 val loaders = listOf(
                     Triple(
+                        "VolumeTimerValuesHook",
+                        mPrefsMap.getBoolean("system_ui_volume_timer"),
+                        VolumeTimerValuesHook::initVolumeTimerValuesHook
+                    ),
+                    Triple(
                         "NewShowVolumePct",
                         mPrefsMap.getBoolean("system_cc_volume_showpct_title"),
                         NewShowVolumePct::initLoader
                     ),
                     Triple(
-                        "NewSuperVolume",
-                        mPrefsMap.getBoolean("system_ui_unlock_super_volume"),
-                        NewSuperVolume::initSuperVolume
-                    ),
-                    Triple(
                         "EnableVolumeBlur",
                         mPrefsMap.getBoolean("system_ui_plugin_enable_volume_blur"),
                         EnableVolumeBlur::initEnableVolumeBlur
+                    ),
+                    Triple(
+                        "StartCollpasedColumnPress",
+                        mPrefsMap.getBoolean("system_ui_volume_collpased_column_press"),
+                        StartCollpasedColumnPress::initLoaderHook
+                    ),
+                    Triple(
+                        "StartCollpasedFootButton",
+                        mPrefsMap.getBoolean("system_ui_volume_hide_foot_button"),
+                        HideCollpasedFootButton::initLoaderHook
                     ),
                     Triple(
                         "DefaultPluginTheme",
@@ -199,8 +210,9 @@ object NewPluginHelperKt : BaseHook() {
                 if (prefKey) {
                     loader(classLoader)
                 }
+                if (logLevel >= 3) logI(TAG, lpparam.packageName, "$name is loaded success.")
             }.onFailure {
-                logE(TAG, lpparam.packageName, "[$tag] $name is fail loaded, log: $it")
+                if (logLevel >= 1) logE(TAG, lpparam.packageName, "[$tag] $name is fail loaded, log: $it")
             }
         }
     }

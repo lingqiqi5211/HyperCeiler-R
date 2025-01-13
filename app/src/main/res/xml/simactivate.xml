@@ -16,27 +16,23 @@
   ~
   ~ Copyright (C) 2023-2025 HyperCeiler Contributions
   -->
+
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:myLocation="@string/milink"
-    app:myLocationHyper="@string/milink_hyperos"
-    app:quick_restart="com.milink.service">
+    app:myLocation="@string/sim_activation_service"
+    app:quick_restart="com.xiaomi.simactivate.service">
     <PreferenceCategory>
-    <SwitchPreference
-        android:title="@string/milink_unlock_mishare"
-        android:key="prefs_key_milink_unlock_mishare"
-        android:defaultValue="false" />
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prefs_key_sim_activation_service_disable_activate_when_roaming"
+            android:title="@string/sim_activation_service_disable_activate_when_roaming"
+            android:summary="@string/sim_activation_service_disable_activate_when_roaming_desc"/>
 
-    <SwitchPreference
-        android:title="@string/milink_allow_camera_devices"
-        android:key="prefs_key_milink_allow_camera_devices"
-        android:defaultValue="false" />
-
-    <SwitchPreference
-        android:title="@string/milink_fuck_hpplay"
-        android:key="prefs_key_milink_fuck_hpplay"
-        android:defaultValue="false" />
-
+        <SwitchPreference
+            android:defaultValue="false"
+            android:key="prefs_key_sim_activation_service_disable_activate_when_roaming_radical"
+            android:title="@string/sim_activation_service_disable_activate_when_roaming_radical"
+            android:dependency="prefs_key_sim_activation_service_disable_activate_when_roaming"/>
     </PreferenceCategory>
 
 </PreferenceScreen>

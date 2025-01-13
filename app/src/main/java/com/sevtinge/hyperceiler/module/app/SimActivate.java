@@ -16,20 +16,17 @@
  *
  * Copyright (C) 2023-2025 HyperCeiler Contributions
  */
-package com.sevtinge.hyperceiler.module.hook.systemui.plugin
 
-import com.sevtinge.hyperceiler.module.base.*
-import com.sevtinge.hyperceiler.module.hook.systemui.statusbar.icon.v.*
-import de.robv.android.xposed.*
+package com.sevtinge.hyperceiler.module.app;
 
-object FocusNotifLyricPluginHelper : BaseHook() {
-    override fun init() {
-        hookAllConstructors("com.android.systemui.shared.plugins.PluginActionManager\$PluginContextWrapper", object : MethodHook(){
-            override fun after(param: MethodHookParam) {
-                val thisObj = param.thisObject
-                val pathClassLoader = XposedHelpers.getObjectField(thisObj,"mClassLoader") as ClassLoader
-                FocusNotifLyric.initLoader(pathClassLoader)
-            }
-        })
+import com.hchen.database.HookBase;
+import com.sevtinge.hyperceiler.module.base.BaseModule;
+import com.sevtinge.hyperceiler.module.hook.simactivate.RoamingActivateHelper;
+
+@HookBase(targetPackage = "com.xiaomi.simactivate.service")
+public class SimActivate extends BaseModule {
+    @Override
+    public void handleLoadPackage() {
+        initHook(new RoamingActivateHelper(), mPrefsMap.getBoolean("sim_activation_service_disable_activate_when_roaming"));
     }
 }

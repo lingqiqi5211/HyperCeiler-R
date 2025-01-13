@@ -962,8 +962,6 @@
     <string name="system_ui_control_center_cc_bluetooth_tile_style_sum">Bluetooth タイルをネットワークタイルの近くに移動する</string>
     <string name="system_ui_control_center_notifrowmenu">拡張通知メニュー</string>
     <string name="system_ui_control_center_notifrowmenu_desc">アプリ情報を開く、強制停止、フローティングウィンドウで開く機能を通知メニューに追加します (通知を左にスワイプすると開けます)</string>
-    <string name="system_ui_unlock_super_volume">スーパーボリュームをアンロック</string>
-    <string name="system_ui_unlock_super_volume_desc">実験的な機能です。実際の機能は基礎となるコードでサポートされている必要があります</string>
     <string name="system_ui_controlcenter_new_title">新しいコントロールセンター</string>
     <string name="system_ui_controlcenter_old_title">従来のコントロールセンター</string>
     <string name="system_ui_controlcenter_unlock_old_title">コントロールセンターのスタイルをアンロック</string>
@@ -1115,7 +1113,6 @@
     <string name="milink">キャスト</string>
     <string name="milink_hyperos">相互接続サービス</string>
     <string name="milink_unlock_mishare">デバイスの相互接続をアンロック</string>
-    <string name="milink_unlock_hmind">Xiaomi HyperMind をアンロック</string>
     <string name="milink_allow_camera_devices">カメラストリーミングの強制サポート</string>
     <string name="milink_fuck_hpplay">hpplay フォルダの作成をブロック</string>
     <!--Sound Recorder-->

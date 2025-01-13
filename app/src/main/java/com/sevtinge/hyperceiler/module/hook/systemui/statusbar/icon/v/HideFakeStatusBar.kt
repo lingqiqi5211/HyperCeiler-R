@@ -37,6 +37,7 @@ import com.github.kyuubiran.ezxhelper.finders.MethodFinder.`-Static`.methodFinde
 import com.sevtinge.hyperceiler.module.base.*
 import com.sevtinge.hyperceiler.module.base.MusicBaseHook.Companion.CHANNEL_ID
 import com.sevtinge.hyperceiler.utils.*
+import com.sevtinge.hyperceiler.utils.api.LazyClass.miuiConfigs
 import de.robv.android.xposed.*
 import kotlinx.coroutines.flow.*
 
@@ -138,7 +139,7 @@ object HideFakeStatusBar : MusicBaseHook() {
         loadClass("com.android.systemui.controlcenter.shade.NotificationHeaderExpandController\$notificationCallback\$1").methodFinder()
             .filterByName("onExpansionChanged").first().createHook {
                 before {
-                    unhook0 = loadClass("com.miui.utils.configs.MiuiConfigs").methodFinder()
+                    unhook0 = miuiConfigs.methodFinder()
                         .filterByName("isVerticalMode").first().replaceMethod {
                             if (isShowingFocusedLyric) {
                                 // 如果在显示歌词,就伪装成横屏,用来取消假时钟动画
@@ -152,9 +153,9 @@ object HideFakeStatusBar : MusicBaseHook() {
                     if (isShowingFocusedLyric) {
                         // 在显示歌词的时候固定通知栏顶部时间和日期的位置和缩放
                         val notificationHeaderExpandController =
-                            it.thisObject.getObjectFieldOrNull("this\$0") ?: return@after
+                            it.thisObject.getObjectField("this\$0")
                         val combinedHeaderController =
-                            notificationHeaderExpandController.getObjectFieldOrNull("headerController")!!
+                            notificationHeaderExpandController?.getObjectFieldOrNull("headerController")!!
                                 .callMethod("get")
                         val notificationBigTime =
                             combinedHeaderController!!.getObjectFieldAs<TextView>("notificationBigTime")
@@ -188,9 +189,9 @@ object HideFakeStatusBar : MusicBaseHook() {
                     if (isShowingFocusedLyric) {
                         // 显示歌词的时候手动调用动画,防止大时钟突然出现
                         val notificationHeaderExpandController =
-                            it.thisObject.getObjectFieldOrNull("this\$0") ?: return@after
+                            it.thisObject.getObjectField("this\$0")
                         val combinedHeaderController =
-                            notificationHeaderExpandController.getObjectField("headerController")!!
+                            notificationHeaderExpandController?.getObjectField("headerController")!!
                                 .callMethod("get")
                         loadClass("com.android.systemui.controlcenter.shade.NotificationHeaderExpandController")
                             .callStaticMethod(

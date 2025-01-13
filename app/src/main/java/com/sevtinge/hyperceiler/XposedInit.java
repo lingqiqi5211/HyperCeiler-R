@@ -18,8 +18,8 @@
  */
 package com.sevtinge.hyperceiler;
 
-import static com.sevtinge.hyperceiler.utils.Helpers.getPackageVersionCode;
-import static com.sevtinge.hyperceiler.utils.Helpers.getPackageVersionName;
+import static com.sevtinge.hyperceiler.module.base.tool.AppsTool.getPackageVersionCode;
+import static com.sevtinge.hyperceiler.module.base.tool.AppsTool.getPackageVersionName;
 import static com.sevtinge.hyperceiler.utils.devicesdk.MiDeviceAppUtilsKt.isPad;
 import static com.sevtinge.hyperceiler.utils.devicesdk.SystemSDKKt.getAndroidVersion;
 import static com.sevtinge.hyperceiler.utils.devicesdk.SystemSDKKt.getHyperOSVersion;
@@ -48,7 +48,6 @@ import com.sevtinge.hyperceiler.module.hook.systemframework.CleanShareMenu;
 import com.sevtinge.hyperceiler.module.hook.systemframework.ScreenRotation;
 import com.sevtinge.hyperceiler.module.hook.systemframework.ToastBlur;
 import com.sevtinge.hyperceiler.module.hook.systemframework.UnlockAlwaysOnDisplay;
-import com.sevtinge.hyperceiler.module.hook.systemframework.network.FlightModeHotSpot;
 import com.sevtinge.hyperceiler.module.hook.systemsettings.VolumeSeparateControlForSettings;
 import com.sevtinge.hyperceiler.module.skip.SystemFrameworkForCorePatch;
 import com.sevtinge.hyperceiler.safe.CrashHook;
@@ -72,7 +71,6 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class XposedInit implements IXposedHookZygoteInit, IXposedHookLoadPackage {
     private static final String TAG = "HyperCeiler";
-    public static boolean isSafeModeOn = false;
     public static String mModulePath = null;
     public static ResourcesTool mResHook;
 
@@ -81,14 +79,17 @@ public class XposedInit implements IXposedHookZygoteInit, IXposedHookLoadPackage
 
     @Override
     public void initZygote(StartupParam startupParam) throws Throwable {
+        // load ResourcesTool
         mResHook = new ResourcesTool(startupParam.modulePath);
         mModulePath = startupParam.modulePath;
         // mXmlTool = new XmlTool(startupParam);
-        setXSharedPrefs();
 
+        // load EzXHelper and set log tag
         EzXHelper.initZygote(startupParam);
         EzXHelper.setLogTag(TAG);
         EzXHelper.setToastTag(TAG);
+
+        // load HCInit
         HCInit.initBasicData(new HCInit.BasicData()
                 .setModulePackageName(BuildConfig.APPLICATION_ID)
                 .setLogLevel(LogManager.getLogLevel())
@@ -96,6 +97,30 @@ public class XposedInit implements IXposedHookZygoteInit, IXposedHookLoadPackage
         );
         HCInit.initStartupParam(startupParam);
 
+        // load New XSPrefs
+        setXSharedPrefs();
+        // load CorePatch
+        new SystemFrameworkForCorePatch().initZygote(startupParam);
+        // load ZygoteHook
+        loadZygoteHook(startupParam);
+    }
+
+    @Override
+    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
+        if (isInSafeMode(lpparam.packageName)) return;
+
+        // load EzXHelper and set log tag
+        EzXHelper.initHandleLoadPackage(lpparam);
+        EzXHelper.setLogTag(TAG);
+        EzXHelper.setToastTag(TAG);
+
+        // load CorePatch
+        new SystemFrameworkForCorePatch().handleLoadPackage(lpparam);
+        // load Module hook apps
+        init(lpparam);
+    }
+
+    private static void loadZygoteHook(StartupParam startupParam) throws Throwable {
         if (mPrefsMap.getBoolean("system_framework_screen_all_rotations")) ScreenRotation.initRes();
         if (mPrefsMap.getBoolean("system_framework_clean_share_menu")) CleanShareMenu.initRes();
         if (mPrefsMap.getBoolean("system_framework_clean_open_menu")) CleanOpenMenu.initRes();
@@ -104,7 +129,6 @@ public class XposedInit implements IXposedHookZygoteInit, IXposedHookLoadPackage
 
         if (startupParam != null) {
             new BackgroundBlurDrawable().initZygote(startupParam);
-            new SystemFrameworkForCorePatch().initZygote(startupParam);
 
             if (mPrefsMap.getBoolean("system_framework_allow_uninstall"))
                 new AllowUninstall().initZygote(startupParam);
@@ -115,22 +139,6 @@ public class XposedInit implements IXposedHookZygoteInit, IXposedHookLoadPackage
             if (mPrefsMap.getBoolean("aod_unlock_always_on_display_hyper"))
                 new UnlockAlwaysOnDisplay().initZygote(startupParam);
         }
-
-    }
-
-    @Override
-    public void handleLoadPackage(XC_LoadPackage.LoadPackageParam lpparam) throws Throwable {
-        if (isInSafeMode(lpparam.packageName)) return;
-        EzXHelper.initHandleLoadPackage(lpparam);
-        EzXHelper.setLogTag(TAG);
-        EzXHelper.setToastTag(TAG);
-        // load CorePatch
-        new SystemFrameworkForCorePatch().handleLoadPackage(lpparam);
-
-        // load Module hook apps
-        init(lpparam);
-        if (mPrefsMap.getBoolean("system_framework_network_flightmode_hotspot"))
-            new FlightModeHotSpot().handleLoadPackage(lpparam);
     }
 
     private void setXSharedPrefs() {
@@ -188,7 +196,7 @@ public class XposedInit implements IXposedHookZygoteInit, IXposedHookLoadPackage
             return;
         }
 
-        dataMap.forEach(new BiConsumer<String, DataBase>() {
+        dataMap.forEach(new BiConsumer<>() {
             @Override
             public void accept(String s, DataBase dataBase) {
                 if (!mPkgName.equals(dataBase.mTargetPackage))
@@ -201,7 +209,7 @@ public class XposedInit implements IXposedHookZygoteInit, IXposedHookLoadPackage
                     return;
 
                 try {
-                    Class<?> clazz = getClass().getClassLoader().loadClass(s);
+                    Class<?> clazz = Objects.requireNonNull(getClass().getClassLoader()).loadClass(s);
                     BaseModule module = (BaseModule) clazz.getDeclaredConstructor().newInstance();
                     module.init(lpparam);
                 } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException |
@@ -251,10 +259,10 @@ public class XposedInit implements IXposedHookZygoteInit, IXposedHookLoadPackage
     }
 
     public void moduleActiveHook(XC_LoadPackage.LoadPackageParam lpparam) {
-        Class<?> mHelpers = XposedHelpers.findClassIfExists(ProjectApi.mAppModulePkg + ".utils.Helpers", lpparam.classLoader);
+        Class<?> AppsTool = XposedHelpers.findClassIfExists(ProjectApi.mAppModulePkg + ".module.base.tool.AppsTool", lpparam.classLoader);
 
-        XposedHelpers.setStaticBooleanField(mHelpers, "isModuleActive", true);
-        XposedHelpers.setStaticIntField(mHelpers, "XposedVersion", XposedBridge.getXposedVersion());
+        XposedHelpers.setStaticBooleanField(AppsTool, "isModuleActive", true);
+        XposedHelpers.setStaticIntField(AppsTool, "XposedVersion", XposedBridge.getXposedVersion());
         XposedBridge.log("[HyperCeiler][I]: Log level is " + logLevelDesc());
     }
 
