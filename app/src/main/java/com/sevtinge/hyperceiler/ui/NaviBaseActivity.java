@@ -85,16 +85,23 @@ public class NaviBaseActivity extends NavigatorActivity {
     @Override
     public NavigatorInfoProvider getBottomTabMenuNavInfoProvider() {
         return id -> {
-            Bundle bundle = new Bundle();
-            if (id == 1000) {
-                bundle.putInt("page", 0);
-            } else if (id == 1001) {
-                bundle.putInt("page", 1);
-            } else if (id == 1002) {
-                bundle.putInt("page", 2);
-            } else {
-                return null;
+            int page;
+            switch (id) {
+                case 1000:
+                    page = 0;
+                    break;
+                case 1001:
+                    page = 1;
+                    break;
+                case 1002:
+                    page = 2;
+                    break;
+                default:
+                    return null;
             }
+            
+            Bundle bundle = new Bundle();
+            bundle.putInt("page", page);
             return new UpdateFragmentNavInfo(id, getDefaultContentFragment(), bundle);
         };
     }
@@ -106,19 +113,34 @@ public class NaviBaseActivity extends NavigatorActivity {
 
     @Override
     public void onCreatePrimaryNavigation(Navigator navigator, Bundle bundle) {
-        UpdateFragmentNavInfo navInfoToHome = getUpdateFragmentNavInfo(0, 1000);
-        UpdateFragmentNavInfo navInfoToSettings = getUpdateFragmentNavInfo(1, 1001);
-        UpdateFragmentNavInfo navInfoToAbout = getUpdateFragmentNavInfo(2, 1002);
-        newLabel(getString(com.sevtinge.hyperceiler.ui.R.string.navigation_home_title), com.sevtinge.hyperceiler.ui.R.drawable.ic_navigation_home, navInfoToHome);
-        newLabel(getString(com.sevtinge.hyperceiler.ui.R.string.navigation_settings_title), com.sevtinge.hyperceiler.ui.R.drawable.ic_navigation_settings, navInfoToSettings);
-        newLabel(getString(com.sevtinge.hyperceiler.ui.R.string.navigation_about_title), com.sevtinge.hyperceiler.ui.R.drawable.ic_navigation_about, navInfoToAbout);
+        // Navigation info constants
+        final int HOME_PAGE = 0;
+        final int SETTINGS_PAGE = 1;
+        final int ABOUT_PAGE = 2;
+        
+        final int HOME_ID = 1000;
+        final int SETTINGS_ID = 1001;
+        final int ABOUT_ID = 1002;
+
+        UpdateFragmentNavInfo navInfoToHome = createNavInfo(HOME_PAGE, HOME_ID);
+        UpdateFragmentNavInfo navInfoToSettings = createNavInfo(SETTINGS_PAGE, SETTINGS_ID);
+        UpdateFragmentNavInfo navInfoToAbout = createNavInfo(ABOUT_PAGE, ABOUT_ID);
+        
+        createNavigationLabel(com.sevtinge.hyperceiler.ui.R.string.navigation_home_title, com.sevtinge.hyperceiler.ui.R.drawable.ic_navigation_home, navInfoToHome);
+        createNavigationLabel(com.sevtinge.hyperceiler.ui.R.string.navigation_settings_title, com.sevtinge.hyperceiler.ui.R.drawable.ic_navigation_settings, navInfoToSettings);
+        createNavigationLabel(com.sevtinge.hyperceiler.ui.R.string.navigation_about_title, com.sevtinge.hyperceiler.ui.R.drawable.ic_navigation_about, navInfoToAbout);
+        
         navigator.navigate(navInfoToHome);
     }
 
-    private UpdateFragmentNavInfo getUpdateFragmentNavInfo(int position, int id) {
+    private UpdateFragmentNavInfo createNavInfo(int position, int id) {
         Bundle bundle = new Bundle();
         bundle.putInt("page", position);
         return new UpdateFragmentNavInfo(id, getDefaultContentFragment(), bundle);
+    }
+
+    private void createNavigationLabel(int titleResId, int iconResId, UpdateFragmentNavInfo navInfo) {
+        newLabel(getString(titleResId), iconResId, navInfo);
     }
 
     @Override

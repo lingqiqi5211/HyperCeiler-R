@@ -48,8 +48,6 @@ import com.sevtinge.hyperceiler.ui.page.about.widget.VersionCard;
 import com.sevtinge.hyperceiler.widget.ListContainerView;
 import com.sevtinge.hyperceiler.widget.VersionCardClickView;
 
-import java.util.Objects;
-
 import fan.appcompat.app.ActionBar;
 import fan.appcompat.app.Fragment;
 import fan.appcompat.internal.app.widget.ActionBarImpl;
@@ -60,9 +58,10 @@ import fan.springback.view.SpringBackLayout;
 public class AboutPageFragment extends DashboardFragment
         implements View.OnScrollChangeListener, NavigatorFragmentListener, IFragmentChange {
 
-    private int lIIlIll = 100 >>> 7;
-    private final int lIIlIlI = 100 >>> 6;
+    private static final int CLICK_COUNT_INITIAL = 100 >>> 7; // 0
+    private static final int CLICK_COUNT_LIMIT = 100 >>> 6; // 1
 
+    private int currentClickCount = CLICK_COUNT_INITIAL;
     private int scrollValue = 0;
 
     private ListContainerView mContainerView;
@@ -81,14 +80,18 @@ public class AboutPageFragment extends DashboardFragment
     private BgEffectPainter mBgEffectPainter;
     private float startTime = (float) System.nanoTime();
     private final Handler mHandler = new Handler(Looper.getMainLooper());
-    Runnable runnableBgEffect = new Runnable() {
+    
+    private final Runnable backgroundEffectRunnable = new Runnable() {
         @Override
         public void run() {
-            mBgEffectPainter.setAnimTime(((((float) System.nanoTime()) - startTime) / 1.0E9f) % 62.831852f);
-            mBgEffectPainter.setResolution(new float[]{mBgEffectView.getWidth(), mBgEffectView.getHeight()});
-            mBgEffectPainter.updateMaterials();
-            mBgEffectView.setRenderEffect(mBgEffectPainter.getRenderEffect());
-            mHandler.postDelayed(runnableBgEffect, 16L);
+            if (mBgEffectPainter != null && mBgEffectView != null) {
+                float currentTime = ((((float) System.nanoTime()) - startTime) / 1.0E9f) % 62.831852f;
+                mBgEffectPainter.setAnimTime(currentTime);
+                mBgEffectPainter.setResolution(new float[]{mBgEffectView.getWidth(), mBgEffectView.getHeight()});
+                mBgEffectPainter.updateMaterials();
+                mBgEffectView.setRenderEffect(mBgEffectPainter.getRenderEffect());
+                mHandler.postDelayed(backgroundEffectRunnable, 16L);
+            }
         }
     };
 
@@ -157,7 +160,7 @@ public class AboutPageFragment extends DashboardFragment
                 mBgEffectPainter.showRuntimeShader(getContext().getApplicationContext(),
                         mBgEffectView, getAppCompatActionBar());
 
-                mHandler.post(runnableBgEffect);
+                mHandler.post(backgroundEffectRunnable);
             }
         });
     }
@@ -217,54 +220,75 @@ public class AboutPageFragment extends DashboardFragment
 
     @Override
     public void initPrefs() {
-        int lIIlllI = ClickCountsUtils.getClickCounts();
+        int clickCounts = ClickCountsUtils.getClickCounts();
         MainActivityContextHelper mainActivityContextHelper = new MainActivityContextHelper(requireContext());
-        Preference lIIllII = findPreference("prefs_key_various_enable_super_function");
+        Preference superFunctionPref = findPreference("prefs_key_various_enable_super_function");
+        
+        initDeviceInfoPreferences(mainActivityContextHelper);
+        initSuperFunctionPreference(superFunctionPref, clickCounts);
+    }
+
+    private void initDeviceInfoPreferences(MainActivityContextHelper mainActivityContextHelper) {
         mDeviceName = findPreference("prefs_key_about_device_name");
         mDeviceInfoDevice = findPreference("prefs_key_about_device_info_device");
         mDeviceInfoAndroid = findPreference("prefs_key_about_device_info_android");
         mDeviceInfoOs = findPreference("prefs_key_about_device_info_os");
         mDeviceInfoPadding = findPreference("prefs_key_about_device_info_padding");
+        
         String deviceName = getProp("persist.sys.device_name");
         String marketName = getProp("ro.product.marketname");
         String androidVersion = getProp("ro.build.version.release");
         String osVersion = getSystemVersionIncremental();
-        if (Objects.equals(marketName, "")) marketName = android.os.Build.MODEL;
-        if (Objects.equals(deviceName, "")) deviceName = marketName;
-        if (Objects.equals(osVersion, "")) osVersion = androidVersion;
+        
+        // Use fallbacks for empty strings
+        if (marketName.isEmpty()) marketName = android.os.Build.MODEL;
+        if (deviceName.isEmpty()) deviceName = marketName;
+        if (osVersion.isEmpty()) osVersion = androidVersion;
+        
         mDeviceName.setTitle(deviceName);
         mDeviceInfoDevice.setTitle(marketName);
         mDeviceInfoAndroid.setTitle(androidVersion);
         mDeviceInfoOs.setTitle(osVersion);
         mDeviceInfoPadding.setTitle(getDeviceToken(mainActivityContextHelper.getAndroidId()));
+    }
 
-        if (lIIllII != null) {
-            lIIllII.setTitle(BuildConfig.VERSION_NAME + " | " + BuildConfig.BUILD_TYPE);
-            lIIllII.setSummary(R.string.description_hyperos);
-            lIIllII.setOnPreferenceClickListener(lIIllll -> {
-                if (lIIllll instanceof SwitchPreference switchPreference) {
-                    switchPreference.setChecked(!switchPreference.isChecked());
-                    lIIlIll++;
+    private void initSuperFunctionPreference(Preference superFunctionPref, int clickCounts) {
+        if (superFunctionPref == null) return;
 
-                    if (switchPreference.isChecked()) {
-                        if (lIIlIll >= lIIlIlI) {
-                            switchPreference.setChecked(!switchPreference.isChecked());
-                            lIIlIll = 100 >>> 8;
-                        }
-                    } else if (lIIlIll >= lIIlllI) {
-                        switchPreference.setChecked(!switchPreference.isChecked());
-                        lIIlIll = 100 >>> 8;
-                    }
-                }
-                return false;
-            });
+        superFunctionPref.setTitle(BuildConfig.VERSION_NAME + " | " + BuildConfig.BUILD_TYPE);
+        superFunctionPref.setSummary(R.string.description_hyperos);
+        superFunctionPref.setOnPreferenceClickListener(preference -> {
+            if (preference instanceof SwitchPreference switchPreference) {
+                handleSuperFunctionClick(switchPreference, clickCounts);
+            }
+            return false;
+        });
+    }
+
+    private void handleSuperFunctionClick(SwitchPreference switchPreference, int clickCounts) {
+        switchPreference.setChecked(!switchPreference.isChecked());
+        currentClickCount++;
+
+        if (switchPreference.isChecked()) {
+            if (currentClickCount >= CLICK_COUNT_LIMIT) {
+                switchPreference.setChecked(false);
+                resetClickCount();
+            }
+        } else if (currentClickCount >= clickCounts) {
+            switchPreference.setChecked(false);
+            resetClickCount();
         }
+    }
+
+    private void resetClickCount() {
+        // Reset to initial value (0)
+        currentClickCount = CLICK_COUNT_INITIAL;
     }
 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (mHandler != null) mHandler.removeCallbacks(runnableBgEffect);
+        if (mHandler != null) mHandler.removeCallbacks(backgroundEffectRunnable);
         if (mContainerView != null) unregisterCoordinateScrollView(mContainerView.getNestedHeader());
         mContainerView = null;
     }

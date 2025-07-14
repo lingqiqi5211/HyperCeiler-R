@@ -34,6 +34,12 @@ public abstract class BaseFragment extends Fragment {
     protected Context mContext;
     protected View mRootView;
 
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        mContext = context;
+    }
+
     protected abstract int getLayoutId();
 
     @Nullable
@@ -44,20 +50,32 @@ public abstract class BaseFragment extends Fragment {
 
     private View initFragment(LayoutInflater inflater, ViewGroup container) {
         if (mRootView == null) {
-            mRootView = inflater.inflate(getLayoutId(), null);
+            mRootView = inflater.inflate(getLayoutId(), container, false);
         }
         return mRootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mRootView = null;
+    }
+
     public void setResult(int resultCode) {
-        requireActivity().setResult(resultCode);
+        if (getActivity() != null) {
+            getActivity().setResult(resultCode);
+        }
     }
 
     public void startActivity(Intent intent) {
-        requireActivity().startActivity(intent);
+        if (getActivity() != null) {
+            getActivity().startActivity(intent);
+        }
     }
 
     public void finish() {
-        requireActivity().finish();
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
     }
 }

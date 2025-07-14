@@ -646,6 +646,40 @@ public class ConfettiManager {
         return base + (deviation * (random.nextFloat() * 2 - 1));
     }
 
+    /**
+     * Get the confetto generator used by this manager.
+     *
+     * @return the confetto generator.
+     */
+    public ConfettoGenerator getConfettoGenerator() {
+        return confettoGenerator;
+    }
+
+    /**
+     * Update the confetto generator used by this manager.
+     * Note: This will only affect newly created confetti.
+     *
+     * @param newGenerator the new confetto generator.
+     * @return the confetti manager so that the set calls can be chained.
+     */
+    public ConfettiManager updateConfettoGenerator(ConfettoGenerator newGenerator) {
+        // Since confettoGenerator is final, we create a new ConfettiManager
+        // This is a safer approach than using reflection
+        ConfettiManager newManager = new ConfettiManager(newGenerator, confettiSource, parentView, confettiView);
+        // Copy current settings
+        newManager.setNumInitialCount(numInitialCount)
+                .setEmissionDuration(emissionDuration)
+                .setEmissionRate(emissionRate * 1000f) // Convert back to original units
+                .setTTL(ttl)
+                .setBound(bound);
+        
+        if (fadeOutInterpolator != null) {
+            newManager.enableFadeOut(fadeOutInterpolator);
+        }
+        
+        return newManager;
+    }
+
     public interface ConfettiAnimationListener {
         void onAnimationStart(ConfettiManager confettiManager);
         void onAnimationEnd(ConfettiManager confettiManager);
