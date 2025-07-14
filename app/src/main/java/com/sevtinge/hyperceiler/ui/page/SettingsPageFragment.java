@@ -115,85 +115,113 @@ public class SettingsPageFragment extends DashboardFragment
 
     @Override
     public void initPrefs() {
-        int mIconMode = Integer.parseInt(PrefsUtils.getSharedStringPrefs(getContext(), "prefs_key_settings_icon", "0"));
+        initIconModePreferences();
+        initLanguagePreference();
+        initLogLevelPreference();
+        initAppIconPreference();
+        initBackupRestorePreferences();
+    }
+
+    private void initIconModePreferences() {
+        int iconMode = Integer.parseInt(PrefsUtils.getSharedStringPrefs(getContext(), "prefs_key_settings_icon", "0"));
         mIconModePreference = findPreference("prefs_key_settings_icon");
         mIconModeValue = findPreference("prefs_key_settings_icon_mode");
-        mLanguage = findPreference("prefs_key_settings_app_language");
-        mHideAppIcon = findPreference("prefs_key_settings_hide_app_icon");
-        mLogLevel = findPreference("prefs_key_log_level");
-
-        setIconMode(mIconMode);
+        
+        setIconMode(iconMode);
         mIconModePreference.setOnPreferenceChangeListener(this);
+    }
+
+    private void initLanguagePreference() {
+        mLanguage = findPreference("prefs_key_settings_app_language");
         String language = LanguageHelper.getLanguage(requireContext());
         int value = LanguageHelper.resultIndex(LanguageHelper.appLanguages, language);
         mLanguage.setValueIndex(value);
         mLanguage.setOnPreferenceChangeListener(
-                (preference, o) -> {
-                    LanguageHelper.setIndexLanguage(getActivity(), Integer.parseInt((String) o), true);
+                (preference, newValue) -> {
+                    LanguageHelper.setIndexLanguage(getActivity(), Integer.parseInt((String) newValue), true);
                     return true;
                 }
         );
+    }
 
-        switch (BuildConfig.BUILD_TYPE) {
-            case "canary" -> {
-                mLogLevel.setDefaultValue(3);
-                mLogLevel.setEntries(new CharSequence[]{"Info", "Debug"});
-                mLogLevel.setEntryValues(new CharSequence[]{"3", "4"});
-                mLogLevel.setOnPreferenceChangeListener(
-                        (preference, o) -> {
-                            setLogLevel(Integer.parseInt((String) o));
-                            return true;
-                        }
-                );
-            }
-            /*case "debug" -> {
-                mLogLevel.setEnabled(false);
-                mLogLevel.setValueIndex(4);
-                mLogLevel.setSummary(R.string.disable_detailed_log_more);
-            }*/
-            default -> mLogLevel.setOnPreferenceChangeListener(
-                    (preference, o) -> {
-                        setLogLevel(Integer.parseInt((String) o));
-                        return true;
-                    }
-            );
+    private void initLogLevelPreference() {
+        mLogLevel = findPreference("prefs_key_log_level");
+        
+        if (BuildConfig.BUILD_TYPE.equals("canary")) {
+            setupCanaryLogLevel();
+        } else {
+            setupDefaultLogLevel();
         }
+    }
 
-        if (mHideAppIcon != null) {
-            mHideAppIcon.setOnPreferenceChangeListener((preference, o) -> {
-
-                PackageManager pm = requireActivity().getPackageManager();
-                int mComponentEnabledState;
-
-                if ((Boolean) o) {
-                    mComponentEnabledState = PackageManager.COMPONENT_ENABLED_STATE_ENABLED;
-                } else {
-                    mComponentEnabledState = PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+    private void setupCanaryLogLevel() {
+        mLogLevel.setDefaultValue(3);
+        mLogLevel.setEntries(new CharSequence[]{"Info", "Debug"});
+        mLogLevel.setEntryValues(new CharSequence[]{"3", "4"});
+        mLogLevel.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    setLogLevel(Integer.parseInt((String) newValue));
+                    return true;
                 }
+        );
+    }
 
-                pm.setComponentEnabledSetting(new ComponentName(requireActivity(), LauncherActivity.class), mComponentEnabledState, PackageManager.DONT_KILL_APP);
+    private void setupDefaultLogLevel() {
+        mLogLevel.setOnPreferenceChangeListener(
+                (preference, newValue) -> {
+                    setLogLevel(Integer.parseInt((String) newValue));
+                    return true;
+                }
+        );
+    }
+
+    private void initAppIconPreference() {
+        mHideAppIcon = findPreference("prefs_key_settings_hide_app_icon");
+        if (mHideAppIcon != null) {
+            mHideAppIcon.setOnPreferenceChangeListener((preference, newValue) -> {
+                PackageManager pm = requireActivity().getPackageManager();
+                int componentState = (Boolean) newValue ? 
+                        PackageManager.COMPONENT_ENABLED_STATE_ENABLED : 
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED;
+
+                pm.setComponentEnabledSetting(
+                        new ComponentName(requireActivity(), LauncherActivity.class), 
+                        componentState, 
+                        PackageManager.DONT_KILL_APP
+                );
+                return true;
+            });
+        }
+    }
+
+    private void initBackupRestorePreferences() {
+        Preference backupPref = findPreference("prefs_key_back");
+        if (backupPref != null) {
+            backupPref.setOnPreferenceClickListener(preference -> {
+                final AppCompatActivity activity = (AppCompatActivity) getActivity();
+                backupSettings(activity);
                 return true;
             });
         }
 
-        findPreference("prefs_key_back").setOnPreferenceClickListener(preference -> {
-            final AppCompatActivity activity = (AppCompatActivity) getActivity();
-            backupSettings(activity);
-            return true;
-        });
-
-        findPreference("prefs_key_rest").setOnPreferenceClickListener(preference -> {
-            restoreSettings(getActivity());
-            return true;
-        });
-
-        findPreference("prefs_key_reset").setOnPreferenceClickListener(preference -> {
-            DialogHelper.showDialog(getActivity(), R.string.reset_title, R.string.reset_desc, (dialog, which) -> {
-                PrefsUtils.mSharedPreferences.edit().clear().apply();
-                Toast.makeText(getActivity(), R.string.reset_okay, Toast.LENGTH_LONG).show();
+        Preference restorePref = findPreference("prefs_key_rest");
+        if (restorePref != null) {
+            restorePref.setOnPreferenceClickListener(preference -> {
+                restoreSettings(getActivity());
+                return true;
             });
-            return true;
-        });
+        }
+
+        Preference resetPref = findPreference("prefs_key_reset");
+        if (resetPref != null) {
+            resetPref.setOnPreferenceClickListener(preference -> {
+                DialogHelper.showDialog(getActivity(), R.string.reset_title, R.string.reset_desc, (dialog, which) -> {
+                    PrefsUtils.mSharedPreferences.edit().clear().apply();
+                    Toast.makeText(getActivity(), R.string.reset_okay, Toast.LENGTH_LONG).show();
+                });
+                return true;
+            });
+        }
     }
 
     @Override

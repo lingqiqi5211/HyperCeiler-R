@@ -117,27 +117,34 @@ public class HomepageEntrance extends DashboardFragment implements Preference.On
         try {
             return requireContext().getPackageManager().getApplicationIcon(packageName);
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            AndroidLogUtils.logE(TAG, "Package icon not found for: " + packageName, e);
             return null;
         }
     }
 
     private String getPackageName(String packageName) {
         try {
-            return (String) requireContext().getPackageManager().getApplicationLabel(requireContext().getPackageManager().getApplicationInfo(packageName, 0));
+            PackageManager pm = requireContext().getPackageManager();
+            return pm.getApplicationLabel(pm.getApplicationInfo(packageName, 0)).toString();
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-            return null; // 如果包名找不到则返回 null
+            AndroidLogUtils.logE(TAG, "Package name not found for: " + packageName, e);
+            return null;
         }
     }
 
     @Override
-    public boolean onPreferenceChange(@NonNull Preference preference, Object o) {
+    public boolean onPreferenceChange(@NonNull Preference preference, Object newValue) {
         if (!isInit) {
             ToastHelper.makeText(getContext(), "Loading. Please wait.");
             return false;
         }
-        entranceState.onEntranceStateChange(preference.getKey(), (boolean) o);
+        
+        if (entranceState != null) {
+            entranceState.onEntranceStateChange(preference.getKey(), (boolean) newValue);
+        } else {
+            AndroidLogUtils.logW(TAG, "EntranceState listener is null");
+        }
+        
         return true;
     }
 

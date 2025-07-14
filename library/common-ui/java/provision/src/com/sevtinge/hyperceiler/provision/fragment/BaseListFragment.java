@@ -43,13 +43,25 @@ public abstract class BaseListFragment extends ListFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        mRootView = inflater.inflate(getLayoutId(), null);
-        mCustomView = mRootView.findViewById(R.id.custom_view);
-        if (getCustomLayoutId() != 0) {
-            View customView = inflater.inflate(getCustomLayoutId(), null);
-            mCustomView.addView(customView);
-        }
+        mRootView = inflater.inflate(getLayoutId(), container, false);
+        initializeCustomView(inflater);
         return mRootView;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        mRootView = null;
+        mCustomView = null;
+    }
+
+    private void initializeCustomView(LayoutInflater inflater) {
+        mCustomView = mRootView.findViewById(R.id.custom_view);
+        
+        int customLayoutId = getCustomLayoutId();
+        if (customLayoutId != 0 && mCustomView != null) {
+            View customView = inflater.inflate(customLayoutId, mCustomView, false);
+            mCustomView.addView(customView);
+        }
+    }
 }
