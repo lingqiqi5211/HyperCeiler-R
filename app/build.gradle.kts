@@ -13,7 +13,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
-val apkId = "HyperCeiler"
+val apkId = "MeowCeiler"
 
 fun runGitCommand(vararg args: String): String? {
     return try {
