@@ -7,7 +7,7 @@ import android.graphics.drawable.Drawable
 import android.os.Handler
 import android.os.Message
 import android.view.View
-import com.sevtinge.hyperceiler.hook.module.base.BaseHook
+import com.sevtinge.hyperceiler.hook.module.base.pack.home.HomeBaseHookNew
 import com.sevtinge.hyperceiler.hook.utils.callMethod
 import com.sevtinge.hyperceiler.hook.utils.callStaticMethod
 import com.sevtinge.hyperceiler.hook.utils.findClass
@@ -23,9 +23,10 @@ import com.sevtinge.hyperceiler.hook.utils.setObjectField
 import de.robv.android.xposed.XposedHelpers
 import io.github.kyuubiran.ezxhelper.core.extension.MemberExtension.paramCount
 import io.github.kyuubiran.ezxhelper.core.finder.MethodFinder.`-Static`.methodFinder
+import io.github.kyuubiran.ezxhelper.xposed.dsl.HookFactory.`-Static`.createHook
 import kotlin.math.abs
 
-object QuickBackNew : BaseHook() {
+object QuickBackNew : HomeBaseHookNew() {
 
     private val gestureBackArrowViewClass by lazy {
         "com.miui.home.recents.GestureBackArrowView".findClass()
@@ -66,13 +67,13 @@ object QuickBackNew : BaseHook() {
             ?.first { name == "performGestureBackHandUp" && paramCount == 0 }
     }
     private val readyStateRecent by lazy {
-        "com.miui.home.recents.GestureBackArrowView\$ReadyState".findClass().enumConstants?.get(2)
+        $$"com.miui.home.recents.GestureBackArrowView$ReadyState".findClass().enumConstants?.get(2)
     }
 
-    override fun init() {
+    @Version(isPad = false, min = 600000000)
+    private fun initOS3Hook() {
         "com.miui.home.recents.GestureStubView$3".findClass().methodFinder()
             .filterByName("onSwipeStop").first().hookBeforeMethod {
-                /*if (it.thisObject as Boolean) {*/
                 if (it.args[0] as Boolean) {
                     val mGestureStubView = it.thisObject.getObjectField("this$0")
                     val mGestureBackArrowView =
@@ -246,5 +247,127 @@ object QuickBackNew : BaseHook() {
             }
         }
 
+    }
+
+    override fun initBase() {
+        "com.miui.home.recents.GestureStubView$3".findClass().methodFinder()
+            .filterByName("onSwipeStop").first().hookBeforeMethod {
+                if (it.args[0] as Boolean) {
+                    val mGestureStubView = it.thisObject.getObjectField("this$0")
+                    val mGestureBackArrowView =
+                        mGestureStubView?.getObjectField("mGestureBackArrowView")
+                    val getCurrentState = mGestureBackArrowView?.callMethod("getCurrentState")
+                    if (getCurrentState == readyStateRecent) {
+                        XposedHelpers.callMethod(mGestureStubView, "onBackCancelled")
+                        performGestureBackHandUpMethod?.invoke(getHapticInstanceMethod)
+                    }
+                }
+            }
+
+        gestureBackArrowViewClass.replaceMethod("loadRecentTaskIcon") {
+            val mNoneTaskIcon = it.thisObject.getObjectFieldAs<Drawable?>("mNoneTaskIcon")
+            val obj = it.thisObject as View
+            val context = obj.context ?: return@replaceMethod mNoneTaskIcon
+            val mPosition = obj.getIntField("mPosition")
+            val icon = getNextTaskMethod.invoke(context, false, mPosition)
+                ?.getObjectFieldAs<Drawable?>("icon")
+
+            return@replaceMethod icon ?: mNoneTaskIcon
+        }
+
+        gestureStubViewClass.apply {
+            methodFinder().filterByName("isDisableQuickSwitch")
+                .first().createHook {
+                    returnConstant(false)
+                }
+
+            getNextTaskMethod.hookBeforeMethod { param ->
+                val context = param.args[0] as Context
+                val switch = param.args[1] as Boolean
+
+                val recentsModel = recentsModelClass.callStaticMethod("getInstance", context)
+                val taskLoader = recentsModel?.callMethod("getTaskLoader")
+                val taskLoadPlan = taskLoader?.callMethod("createLoadPlan", context)
+                taskLoader?.callMethod("preloadTasks", taskLoadPlan, -1)
+                val taskStack = taskLoadPlan?.callMethod("getTaskStack")
+                var runningTask: ActivityManager.RunningTaskInfo? = null
+                // var activityOptions: ActivityOptions? = null
+                if (
+                    taskStack == null ||
+                    taskStack.callMethod("getTaskCount") as Int == 0 ||
+                    (recentsModel.callMethod("getRunningTask") as ActivityManager.RunningTaskInfo?)?.also {
+                        runningTask = it
+                    } == null
+                ) {
+                    param.result = null
+                    return@hookBeforeMethod
+                }
+                val stackTasks = taskStack.callMethod("getStackTasks") as ArrayList<*>
+                val size = stackTasks.size
+                var task: Any? = null
+                for (index in stackTasks.indices) {
+                    if (stackTasks[index].getObjectField("key")
+                            ?.getObjectField("id") as Int == runningTask!!.taskId
+                    ) {
+                        task = stackTasks[index + 1]
+                        break
+                    }
+                }
+                if (task == null && size >= 1 && "com.miui.home" == runningTask!!.baseActivity!!.packageName) {
+                    task = stackTasks[0]
+                }
+
+                if (task != null && task.getObjectField("icon") == null) {
+                    task.setObjectField(
+                        "icon",
+                        taskLoader.callMethod(
+                            "getAndUpdateActivityIcon",
+                            task.getObjectField("key"),
+                            task.getObjectField("taskDescription"),
+                            context.resources, true
+                        )
+                    )
+                }
+                if (!switch || task == null) {
+                    param.result = task
+                    return@hookBeforeMethod
+                }
+                val activityManagerWrapper =
+                    activityManagerWrapperClass.getStaticObjectField("sInstance")
+                if (activityManagerWrapper == null) {
+                    param.result = task
+                    return@hookBeforeMethod
+                }
+                val key = XposedHelpers.getObjectField(task, "key")
+                val taskId = XposedHelpers.getObjectField(key, "id")
+                val windowingMode = XposedHelpers.getObjectField(key, "windowingMode") as Int
+                val activityOptions = ActivityOptions.makeBasic()
+                if (windowingMode == 3) {
+                    setLaunchWindowingModeMethod.invoke(activityOptions, 4)
+                }
+                try {
+                    val clz =
+                        "com.android.systemui.shared.recents.utilities.RemoteAnimationFinishCallbackManager".findClass()
+                    val remoteAnimationFinishCallbackManager = clz.callStaticMethod("getInstance")
+                    if (remoteAnimationFinishCallbackManager?.callMethod("isQuickSwitchApp") as? Boolean == true) {
+                        remoteAnimationFinishCallbackManager.callMethod("setQuickSwitchApp", false)
+                        remoteAnimationFinishCallbackManager.callMethod("setOpenTaskId", taskId)
+                    }
+                    if (remoteAnimationFinishCallbackManager?.callMethod("isQuickSwitchApp") as? Boolean == true) {
+                        remoteAnimationFinishCallbackManager.callMethod("finishMergeCallback")
+                    }
+                    remoteAnimationFinishCallbackManager?.callMethod("directExecuteWorkHandlerFinishRunnableIfNeed")
+                    val activityManager = activityManagerClass.callStaticMethod("getDefault")
+                    activityManager?.callMethod(
+                        "startActivityFromRecents",
+                        taskId, activityOptions.toBundle()
+                    )
+                    param.result = task
+                } catch (t: Throwable) {
+                    logE(TAG, lpparam.packageName, "$t")
+                    param.result = task
+                }
+            }
+        }
     }
 }
