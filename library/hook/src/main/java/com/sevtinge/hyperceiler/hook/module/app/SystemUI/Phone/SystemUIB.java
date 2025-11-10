@@ -27,6 +27,7 @@ import com.sevtinge.hyperceiler.hook.module.rules.systemui.AllowManageAllNotific
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.AutoCollapse;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.AutoSEffSwitchForSystemUi;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.UnlockClipboard;
+import com.sevtinge.hyperceiler.hook.module.rules.systemui.ZenModeFix;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.base.api.MiuiStub;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.base.controlcenter.MediaControlBgFactory;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.controlcenter.AutoDismissExpandedPopupsHook;
@@ -35,6 +36,7 @@ import com.sevtinge.hyperceiler.hook.module.rules.systemui.controlcenter.ExpandN
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.controlcenter.FiveGTile;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.controlcenter.FixTilesList;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.controlcenter.GmsTile;
+import com.sevtinge.hyperceiler.hook.module.rules.systemui.controlcenter.MuteVisibleNotifications;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.controlcenter.NewFlashLight;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.controlcenter.NotificationImportanceHyperOSFix;
 import com.sevtinge.hyperceiler.hook.module.rules.systemui.controlcenter.NotificationWeather;
@@ -183,6 +185,8 @@ public class SystemUIB extends BaseModule {
         initHook(ExpandNotificationKt.INSTANCE, !mPrefsMap.getStringSet("system_ui_control_center_expand_notification").isEmpty());
         initHook(new UnimportantNotification(), mPrefsMap.getBoolean("system_ui_control_center_unimportant_notification"));
         initHook(RedirectToNotificationChannelSetting.INSTANCE, mPrefsMap.getBoolean("system_ui_control_center_redirect_notice"));
+        initHook(new MuteVisibleNotifications(), mPrefsMap.getBoolean("system_ui_control_center_mute_visible_notice"));
+        initHook(new ZenModeFix(), mPrefsMap.getBoolean("system_ui_control_center_zen_fix"));
         initHook(ControlCenterStyle.INSTANCE, mPrefsMap.getBoolean("system_control_center_unlock_old"));
 
         // 磁贴
