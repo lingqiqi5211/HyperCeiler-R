@@ -26,6 +26,7 @@ import com.sevtinge.hyperceiler.hook.utils.prefs.PrefsMap;
 import com.sevtinge.hyperceiler.hook.utils.prefs.PrefsUtils;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Member;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -38,8 +39,41 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 public class HookTool extends XposedLogUtils {
     public static final PrefsMap<String, Object> mPrefsMap = PrefsUtils.mPrefsMap;
     private final String TAG = getClass().getSimpleName();
+    private static final Method deoptimizeMethod;
 
     public XC_LoadPackage.LoadPackageParam lpparam;
+
+    static {
+        Method m = null;
+        try {
+            m = XposedBridge.class.getDeclaredMethod("deoptimizeMethod", Member.class);
+        } catch (Throwable t) {
+            logE("HookTool", "Failed to get deoptimizeMethod: " + t);
+        }
+        deoptimizeMethod = m;
+    }
+
+    public static void deoptimizeMethod(Method m) {
+        if (deoptimizeMethod != null) {
+            try {
+                deoptimizeMethod.invoke(null, m);
+            } catch (Throwable t) {
+                logE("HookTool", "Failed to deoptimize method " + m + ": " + t);
+            }
+        }
+    }
+
+    public static void deoptimizeMethods(Class<?> c, String n) {
+        for (Method m : c.getDeclaredMethods()) {
+            if (deoptimizeMethod != null && m.getName().equals(n)) {
+                try {
+                    deoptimizeMethod.invoke(null, m);
+                } catch (Throwable t) {
+                    logE("HookTool", "Failed to deoptimize methods " + m + ": " + t);
+                }
+            }
+        }
+    }
 
     public void setLoadPackageParam(XC_LoadPackage.LoadPackageParam param) {
     }
