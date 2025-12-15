@@ -121,6 +121,6 @@
     <string name="debug_mode_switch">Версия отладки</string>
     <string name="debug_mode_home_version">Установить код домашней версии</string>
     <string name="debug_mode_home_version_desc">Слишком высокий номер версии все равно будет заблокирован, поэтому, пожалуйста, вводите его внимательно.</string>
-    <string name="load_apps_failed">Неудалось загрузить список приложений</string>
+    <string name="load_apps_failed">Не удалось загрузить список приложений</string>
     <string name="search_apps_hint">Поиск %d приложений</string>
 </resources>

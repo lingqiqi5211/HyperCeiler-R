@@ -98,7 +98,7 @@
     <string name="disable_suggest">Отключить предложение</string>
     <string name="enable_suggest">Включить предложение</string>
     <string name="search_apps_hint">Поиск %d приложений</string>
-    <string name="load_apps_failed">Неудалось загрузить список приложений</string>
+    <string name="load_apps_failed">Не удалось загрузить список приложений</string>
     <string name="logo_egg_NotificationName">Уведомление о пасхальном яйце</string>
     <string name="logo_egg_NotificationName_tips">Это уведомление пасхального яйца</string>
     <string name="logo_egg_Notification_tips">Пожалуйста, включите уведомления в настройках, чтобы увидеть пасхальные яйца</string>
