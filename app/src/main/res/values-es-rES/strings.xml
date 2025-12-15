@@ -84,4 +84,6 @@
     <string name="log_level_none">Desactivar registro</string>
     <string name="disable_suggest">Desactivar sugerencias</string>
     <string name="enable_suggest">Activar sugerencias</string>
+    <string name="search_apps_hint">Search %d apps</string>
+    <string name="load_apps_failed">Failed to load application list</string>
 </resources>

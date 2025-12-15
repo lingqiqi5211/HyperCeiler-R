@@ -104,6 +104,8 @@
     <string name="log_level_none">معطل</string>
     <string name="disable_suggest">تعطيل الاقتراحات</string>
     <string name="enable_suggest">تمكين الاقتراحات</string>
+    <string name="search_apps_hint">Search %d apps</string>
+    <string name="load_apps_failed">Failed to load application list</string>
     <string name="logo_egg_NotificationName">إشعار مفاجأة مخفية</string>
     <string name="logo_egg_NotificationName_tips">هذا إشعار مفاجأة مخفية</string>
     <string name="logo_egg_Notification_tips">الرجاء تمكين الإشعارات في الإعدادات لمشاهدة المفاجأة المخفية</string>

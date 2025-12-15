@@ -101,5 +101,7 @@
     <string name="log_level_none">Aus</string>
     <string name="disable_suggest">Vorschlag deaktivieren</string>
     <string name="enable_suggest">Vorschlag aktivieren</string>
+    <string name="search_apps_hint">Search %d apps</string>
+    <string name="load_apps_failed">Failed to load application list</string>
     <string name="miuix_appcompat_confirm_description">OK</string>
 </resources>

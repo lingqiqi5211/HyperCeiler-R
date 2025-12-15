@@ -82,6 +82,8 @@
     <string name="log_level_none">Wyłączone</string>
     <string name="disable_suggest">Wyłącz sugestie</string>
     <string name="enable_suggest">Włącz sugestie</string>
+    <string name="search_apps_hint">Search %d apps</string>
+    <string name="load_apps_failed">Failed to load application list</string>
     <string name="pull_to_enter_private">Pociągnij w dół aby otworzyć prywatną przestrzeń</string>
     <string name="release_enter_private">Póść aby otworzyć prywatną przestrzeń</string>
     <string name="miuix_appcompat_confirm_description">OK</string>

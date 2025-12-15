@@ -19,7 +19,6 @@
   --><resources>
     <string name="pull_to_enter_private">Потяните вниз для перехода во второе пространство</string>
     <string name="release_enter_private">Отпустите для перехода во второе пространство</string>
-    <!--Pop-up window/miuix part-->
     <string name="miuix_appcompat_action_mode_select_all">Выбрать все</string>
     <string name="miuix_appcompat_cancel_description">Отмена</string>
     <string name="miuix_appcompat_select_all_description">Выбрать все</string>
@@ -29,7 +28,6 @@
     <string name="miuix_appcompat_search_input_description">Поиск</string>
     <string name="miuix_appcompat_actionbar_immersion_button_more_description">Другое</string>
     <string name="miuix_appcompat_action_mode_inverse">Отменить выбор</string>
-    <!--HyperCeiler Settings/About Page-->
     <string name="tip">Совет</string>
     <string name="root">Некоторые функции недоступны без Root прав</string>
     <string name="soft_reboot">Перезагрузка </string>
@@ -41,7 +39,6 @@
     <string name="pid_failed">Целевое приложение не запущено и не требует перезапуска.</string>
     <string name="reboot_failed">Перезагрузка не удалась. Проверьте, предоставлено ли HyperCeiler разрешение Root/Su.</string>
     <string name="experimental_features">Экспериментальные функции</string>
-    <!--HyperCeiler Tips-->
     <string name="error">Ошибка</string>
     <string name="warn">Предупреждение</string>
     <string name="module_app_failed">В модуле произошла фатальная ошибка</string>
@@ -90,21 +87,18 @@
     <string name="unsupported_system_func">Эта функция не поддерживается в текущей версии системы</string>
     <string name="supported_system_func">Эта функция официально поддерживается в текущей версии системы</string>
     <string name="feature_doing_func">Текущая функция находится в разработке, следите за обновлениями.</string>
-    <!--System UI-->
     <string name="system_ui">Интерфейс системы</string>
-    <!--System launcher-->
     <string name="mihome">Системный лаунчер</string>
-    <!--Settings-->
     <string name="system_settings">Настройки</string>
-    <!--Security/Tablet security center-->
     <string name="security_center_hyperos">Безопасность</string>
-    <!--Other-->
     <string name="exit">Выход</string>
     <string name="ignore">Игнорировать</string>
     <string name="log_level">Уровень журнала</string>
     <string name="log_level_none">Отключено</string>
     <string name="disable_suggest">Отключить предложение</string>
     <string name="enable_suggest">Включить предложение</string>
+    <string name="search_apps_hint">Поиск %d приложений</string>
+    <string name="load_apps_failed">Неудалось загрузить список приложений</string>
     <string name="logo_egg_NotificationName">Уведомление о пасхальном яйце</string>
     <string name="logo_egg_NotificationName_tips">Это уведомление пасхального яйца</string>
     <string name="logo_egg_Notification_tips">Пожалуйста, включите уведомления в настройках, чтобы увидеть пасхальные яйца</string>

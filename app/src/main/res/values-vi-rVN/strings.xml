@@ -19,7 +19,6 @@
   --><resources>
     <string name="pull_to_enter_private">Kéo xuống để vào không gian riêng tư</string>
     <string name="release_enter_private">Thả ra để vào không gian riêng tư</string>
-    <!--Pop-up window/miuix part-->
     <string name="miuix_appcompat_action_mode_select_all">Chọn tất cả</string>
     <string name="miuix_appcompat_cancel_description">Hủy</string>
     <string name="miuix_appcompat_confirm_description">OK</string>
@@ -30,7 +29,6 @@
     <string name="miuix_appcompat_search_input_description">Tìm kiếm</string>
     <string name="miuix_appcompat_actionbar_immersion_button_more_description">Xem thêm</string>
     <string name="miuix_appcompat_action_mode_inverse">Đảo ngược</string>
-    <!--HyperCeiler Settings/About Page-->
     <string name="tip">Mẹo</string>
     <string name="root">Một số tính năng không khả dụng nếu không có quyền Root/Su</string>
     <string name="soft_reboot">Khởi động lại </string>
@@ -42,7 +40,6 @@
     <string name="pid_failed">Ứng dụng mục tiêu không chạy và không cần phải khởi động lại.</string>
     <string name="reboot_failed">Khởi động lại không thành công. Vui lòng kiểm tra xem HyperCeiler đã được cấp quyền Root/Su chưa.</string>
     <string name="experimental_features">Tính năng thử nghiệm</string>
-    <!--HyperCeiler Tips-->
     <string name="error">Lỗi</string>
     <string name="warn">Cảnh báo</string>
     <string name="module_app_failed">Đã xảy ra lỗi nghiêm trọng trong mô-đun</string>
@@ -90,21 +87,18 @@
     <string name="unsupported_system_func">Tính năng này không được hỗ trợ trong phiên bản hệ thống hiện tại</string>
     <string name="supported_system_func">Chức năng này được hỗ trợ chính thức bởi phiên bản hệ thống hiện tại</string>
     <string name="feature_doing_func">Chức năng hiện tại đang được tạo ra, vui lòng chờ</string>
-    <!--System UI-->
     <string name="system_ui">Giao diện hệ thống</string>
-    <!--System launcher-->
     <string name="mihome">Trình khởi chạy hệ thống</string>
-    <!--Settings-->
     <string name="system_settings">Cài đặt</string>
-    <!--Security/Tablet security center-->
     <string name="security_center_hyperos">Bảo mật</string>
-    <!--Other-->
     <string name="exit">Thoát</string>
     <string name="ignore">Bỏ qua</string>
     <string name="log_level">Mức độ nhật ký</string>
     <string name="log_level_none">Tắt</string>
     <string name="disable_suggest">Tắt đề xuất</string>
     <string name="enable_suggest">Bật đề xuất</string>
+    <string name="search_apps_hint">Tìm kiếm %d ứng dụng</string>
+    <string name="load_apps_failed">Không tải được danh sách ứng dụng</string>
     <string name="logo_egg_NotificationName">Thông báo về Easter Egg</string>
     <string name="logo_egg_NotificationName_tips">Đây là thông báo về Easter Egg</string>
     <string name="logo_egg_Notification_tips">Vui lòng bật thông báo trong Cài đặt để xem Easter Egg</string>

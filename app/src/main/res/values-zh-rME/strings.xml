@@ -50,4 +50,6 @@
     <!--Settings-->
     <!--Security/Tablet security center-->
     <!--Other-->
+    <string name="search_apps_hint">搜索 %d 个应用</string>
+    <string name="load_apps_failed">加载应用列表失败</string>
 </resources>

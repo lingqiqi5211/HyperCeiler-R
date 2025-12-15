@@ -103,6 +103,8 @@
     <string name="log_level_none">關閉</string>
     <string name="disable_suggest">關閉建議</string>
     <string name="enable_suggest">開啟建議</string>
+    <string name="search_apps_hint">Search %d apps</string>
+    <string name="load_apps_failed">Failed to load application list</string>
     <string name="logo_egg_NotificationName">彩蛋通知</string>
     <string name="logo_egg_NotificationName_tips">這是彩蛋通知</string>
     <string name="logo_egg_Notification_tips">請在設定裡打開通知以查看彩蛋</string>

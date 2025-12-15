@@ -19,7 +19,6 @@
   --><resources>
     <string name="pull_to_enter_private">プルダウンでプライベートスペースに入る</string>
     <string name="release_enter_private">離すとプライベートスペースに入ります</string>
-    <!--Pop-up window/miuix part-->
     <string name="miuix_appcompat_action_mode_select_all">すべて選択</string>
     <string name="miuix_appcompat_cancel_description">キャンセル</string>
     <string name="miuix_appcompat_select_all_description">すべて選択</string>
@@ -29,7 +28,6 @@
     <string name="miuix_appcompat_search_input_description">検索</string>
     <string name="miuix_appcompat_actionbar_immersion_button_more_description">詳細</string>
     <string name="miuix_appcompat_action_mode_inverse">すべての選択を解除</string>
-    <!--HyperCeiler Settings/About Page-->
     <string name="tip">ヒント</string>
     <string name="root">一部の機能は Root/Su 権限がないと利用できません</string>
     <string name="soft_reboot">再起動 </string>
@@ -41,7 +39,6 @@
     <string name="pid_failed">対象のアプリは現在実行されていないため、再起動する必要はありません。</string>
     <string name="reboot_failed">再起動に失敗しました。HyperCeiler に Root/Su 権限が付与されているか確認してください。</string>
     <string name="experimental_features">実験的な機能</string>
-    <!--HyperCeiler Tips-->
     <string name="error">エラー</string>
     <string name="warn">警告</string>
     <string name="module_app_failed">モジュールで致命的なエラーが発生しました</string>
@@ -87,21 +84,18 @@
     <string name="unsupported_system_func">この機能は現在のシステムバージョンではサポートされていません</string>
     <string name="supported_system_func">この機能は現在のシステムバージョンで正式にサポートされています</string>
     <string name="feature_doing_func">現在の機能は開発中です。お楽しみに。</string>
-    <!--System UI-->
     <string name="system_ui">システム UI</string>
-    <!--System launcher-->
     <string name="mihome">システムランチャー</string>
-    <!--Settings-->
     <string name="system_settings">設定</string>
-    <!--Security/Tablet security center-->
     <string name="security_center_hyperos">セキュリティ</string>
-    <!--Other-->
     <string name="exit">終了</string>
     <string name="ignore">無視</string>
     <string name="log_level">ログレベル</string>
     <string name="log_level_none">無効</string>
     <string name="disable_suggest">サジェストを無効にする</string>
     <string name="enable_suggest">サジェストを有効にする</string>
+    <string name="search_apps_hint">%d 個のアプリを検索</string>
+    <string name="load_apps_failed">アプリリストの読み込みに失敗しました</string>
     <string name="logo_egg_NotificationName">イースターエッグ通知</string>
     <string name="logo_egg_NotificationName_tips">これはイースターエッグの通知です</string>
     <string name="logo_egg_Notification_tips">イースターエッグを見るには設定で通知を有効にしてください</string>
